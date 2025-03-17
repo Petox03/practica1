@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <form class="max-w-md mx-auto" action="{{ route('drug.update', $my_drug->id) }}" method="post">
+    <form class="max-w-md mx-auto" {{-- action="{{ route('drugs.update', $my_drug->id) }}" --}} method="post">
         @method('PUT')
         @csrf
         <div class="relative z-0 w-full mb-5 group">

@@ -10,5 +10,5 @@ class Drug extends Model
     /** @use HasFactory<\Database\Factories\DrugFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'price', 'quantity'];
+    protected $fillable = ['name', 'description', 'price', 'quantity', 'order', 'img'];
 }
