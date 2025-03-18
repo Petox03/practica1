@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 class DrugController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Despliega todas los medicamentos en orden ascendente por el número de orden en la base de datos.
+     * Los datos son desplegados en la vista index ubicado en la carpeta views/drugs.
      */
     public function index()
     {
@@ -26,7 +27,9 @@ class DrugController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Despliega los datos de un medicamento de la base de datos.
+     * El medicamento es buscado mediante su id.
+     * El medicamento es enviado a la vista show ubicado en la carpeta views/drugs
      */
     public function show(string $id)
     {

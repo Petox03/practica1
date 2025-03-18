@@ -9,49 +9,92 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class DrugController extends Controller
 {
-    public function generatePdf($id)
+    /**
+     * Función que genera el pdf utilizando la vista show de los medicamentos como base.
+     * La función encuentra el medicamento mediante su id.
+     * Genera la vista del pdf mediante la vista mencionada mandando los valores necesarios.
+     * retorna como respuesta la descarga del pdf y le asiga un nombre dependiendo del medicamento,
+     *
+     * @param integer $id
+     * @return Response
+     */
+    public function generatePdf(int $id): Response
     {
-        // Busca el medicamento por ID
-        $my_drug = Drug::findOrFail($id); // Cambiamos el nombre a `$my_drug` para coincidir con la vista
+        $my_drug = Drug::findOrFail($id);
 
-        // Genera el PDF desde la vista `drugs.show`
-        $pdf = DomPDF::loadView('drugs.show', compact('my_drug')); // Pasamos `$my_drug` correctamente
+        $pdf = DomPDF::loadView('drugs.show', compact('my_drug'));
 
-        // Devuelve el PDF para descarga
-        return $pdf->download("medicamento_{$id}.pdf");
+        return $pdf->download("medicamento_{$id}_{$my_drug->name}.pdf");
     }
 
-    public function index()
+    /**
+     * Función que retorna todas los medicamentos almacenados en la base de datos en formato json
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
         $drugs = Drug::all();
         return response()->json($drugs);
     }
 
-    public function find($id)
+    /**
+     * función que busca un medicamento mediante su id y lo retorna en formato json
+     *
+     * @param integer $id
+     * @return JsonResponse
+     */
+    public function find(int $id): JsonResponse
     {
         $my_drug = Drug::find($id);
 
         return response()->json($my_drug);
     }
 
-    public function search(Request $request)
+    /**
+     * Función que busca un medicamento con la coincidencia al parámetro recibido en el campo "search" en formato json.
+     * Guarda el texto recibido de la petición en el campo "search".
+     * Busca en la tabla de medicamentos cualquier medicament que tenga conincidencias con el texto recibido
+     * Regresa el resultado en formato json
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
         $drugs = Drug::where('name', 'LIKE', "%{$search}%")->get();
         return response()->json($drugs);
     }
 
-    public function store(Request $request)
+    /**
+     * Función que almacena en la base de datos un nuevo medicamento.
+     *
+     * Valida los datos de la petición y genera mensajes personalizados para cada validación.
+     * Encuentra cuál es el último order de el último medicamento.
+     * Añade el campo "order" a la petición validada y asigna como order el último order encontrado más uno.
+     * Si la petición tiene un archivo, lo almacena en la carpeta images que está dentro de la carpeta public.
+     * Añade el campo "img" el path donde se guardó la imagen
+     * Crea la medicina con la información validada.
+     * Retorna la medicina en formato json
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
-            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación para la imagen
+            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'name.required' => 'El nombre del medicamento es obligatorio.',
             'description.required' => 'La descripción del medicamento es obligatoria.',
@@ -80,9 +123,22 @@ class DrugController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    /**
+     * Función que actualiza un medicamento almacenado en la base de datos.
+     * 
+     * Almacena los datos recibidos en el log para depurarlos en caso de que ocurran errores.
+     * Valida los datos recibidos con mensaje personalizado.
+     * encuentra el medicamento con el id recibido.
+     * si la petición tiene una imagen, valida si la imagen existe y elimina la imagen almacenada.
+     * actualiza los datos con la información validada.
+     * retorna la respuesta en foramto json.
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return JsonResponse
+     */
+    public function update(Request $request, int $id): JsonResponse
     {
-        // Depura los datos recibidos
         Log::info($request->all());
 
         $validatedData = $request->validate([
@@ -90,7 +146,16 @@ class DrugController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'name.required' => 'El nombre del medicamento es obligatorio.',
+            'description.required' => 'La descripción del medicamento es obligatoria.',
+            'price.required' => 'El precio del medicamento es obligatorio.',
+            'quantity.required' => 'La cantidad por paquete es obligatoria.',
+            'img.required' => 'La imagen es obligatoria.',
+            'img.image' => 'El archivo debe ser una imagen.',
+            'img.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, o gif.',
+            'imf.max' => 'La imagen no debe exceder los 2 MB.',
         ]);
 
         // Procesa el resto como antes
@@ -111,7 +176,17 @@ class DrugController extends Controller
         ], 200);
     }
 
-    public function updateOrder(Request $request)
+    /**
+     * actualiza el orden de los medicametos. Esta función es llamada cuando se usa el drag&drop
+     * 
+     * recibe el input orders de la petición.
+     * para cada order, actualiza el nuevo orden de los medicamentos.
+     * Retorna la lista de los medicamentos con el nuevo orden.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateOrder(Request $request): JsonResponse
     {
         $orders = $request->input('orders');
 
@@ -126,7 +201,19 @@ class DrugController extends Controller
         return response()->json(['success' => true, 'updatedDrugs' => $updatedDrugs]);
     }
 
-    public function destroy(Request $request, $id)
+
+    /**
+     * Elimina un medicamento de la base de datos.
+     * 
+     * Busca el medicamento en la base de datos con el id proporcionado.
+     * si no existe el medicamento, retorna un json con la respuesta en formato json de que el medicamento no se ha encontrado.
+     * si existe, elimina el medicamento.
+     * retorna la respuesta en formato json de que el medicamento se ha eliminado.
+     *
+     * @param integer $id
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
     {
         $drug = Drug::find($id);
 
