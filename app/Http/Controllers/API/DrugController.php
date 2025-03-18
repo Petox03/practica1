@@ -69,7 +69,7 @@ class DrugController extends Controller
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $drugs = Drug::where('name', 'LIKE', "%{$search}%")->get();
+        $drugs = Drug::where('name', 'LIKE', "%{$search}%")->orderBy('order', 'asc')->get();
         return response()->json($drugs);
     }
 
