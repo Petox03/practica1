@@ -15,7 +15,7 @@
         <div style="width: 100%; max-width: 600px; border: 1px solid #e5e7eb; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
             <!-- Imagen del Medicamento -->
             <div style="width: 100%; height: auto;">
-                <img src="{{ url('storage/' . $my_drug->img) }}" alt="{{ $my_drug->name }}" style="width: 100%; height: 200px; object-fit: cover; display: block; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                <img src="data:image/jpg;base64, {{ base64_encode(file_get_contents(public_path("storage\\".$my_drug->img))) }}" alt="{{ $my_drug->name }}" style="width: 100%; height: 500px; object-fit: cover; display: block; border-top-left-radius: 8px; border-top-right-radius: 8px;">
             </div>
 
             <div style="padding: 16px;">

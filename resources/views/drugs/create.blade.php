@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <form class="max-w-md mx-auto" {{-- action="{{ route('drug.store') }}" --}} method="post" enctype="multipart/form-data">
+    <form class="max-w-md mx-auto" method="post" enctype="multipart/form-data">
         @csrf
         <!-- Campo de subir imagen -->
         <div class="relative z-0 w-full mb-5 group">
@@ -32,22 +32,16 @@
 
 @push('js')
     <script>
-
-        /**@argument
-         * 
-         */
         function previewImage(event) {
-            const file = event.target.files[0]; // Obtener el archivo seleccionado
+            const file = event.target.files[0];
             const previewContainer = document.getElementById('imagePreviewContainer');
             const previewImage = document.getElementById('imagePreview');
 
             if (file) {
-                // Generar una URL temporal con el archivo seleccionado
                 const objectUrl = URL.createObjectURL(file);
-                previewImage.src = objectUrl; // Asignar la URL temporal al elemento <img>
-                previewContainer.classList.remove('hidden'); // Mostrar el contenedor de previsualización
+                previewImage.src = objectUrl;
+                previewContainer.classList.remove('hidden');
             } else {
-                // Ocultar la previsualización si no hay archivo
                 previewImage.src = '';
                 previewContainer.classList.add('hidden');
             }

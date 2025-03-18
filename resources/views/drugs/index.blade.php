@@ -66,7 +66,7 @@
                             </div>
                             <div>
                                 <button onclick="openEditModal({{ $drug->id }})"
-                                    class="px-5 font-medium text-blue-600 hover:underline">Editar</button>
+                                    class="px-5 font-medium text-blue-600 hover:underline cursor-pointer">Editar</button>
 
                             </div>
 
@@ -90,22 +90,22 @@
             <div class="grid grid-cols-3 gap-4">
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Nombre del medicamento</legend>
-                    <input type="text" class="input" placeholder="Nombre" id="drug-name" value="asdf" />
+                    <input type="text" class="input" placeholder="Nombre" id="drug-name"/>
                     <span class="error-message text-red-500 text-sm"></span>
                 </fieldset>
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Precio</legend>
-                    <input type="text" class="input" placeholder="1,000" id="drug-price" value="1" />
+                    <input type="text" class="input" placeholder="1,000" id="drug-price"/>
                     <span class="error-message text-red-500 text-sm"></span>
                 </fieldset>
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Cantidad por paquete</legend>
-                    <input type="text" class="input" placeholder="0" id="drug-quantity" value="1" />
+                    <input type="text" class="input" placeholder="0" id="drug-quantity"/>
                     <span class="error-message text-red-500 text-sm"></span>
                 </fieldset>
                 <fieldset class="fieldset col-span-3">
                     <legend class="fieldset-legend">Descripción</legend>
-                    <textarea class="textarea h-24 w-full" placeholder="..." id="drug-description">asdf</textarea>
+                    <textarea class="textarea h-24 w-full" placeholder="..." id="drug-description"></textarea>
                     <span class="error-message text-red-500 text-sm"></span>
                 </fieldset>
                 <fieldset class="fieldset col-span-3">
@@ -190,10 +190,17 @@
 @endsection
 
 @push('js')
+
+    {{-- Script para sortable js --}}
     <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
     <script>
+        // Se asigna al div con el id simpleList un nuevo elemento sortable
         Sortable.create(document.getElementById('simpleList'), {
+
+            //configura la animación en 150ms
             animation: 150,
+
+            // Cuando la animación termina llama a una función anónima
             onEnd: function(evt) {
                 // Obtenemos el nuevo orden de las filas
                 const order = [...evt.to.children].map((row, index) => {
@@ -207,14 +214,14 @@
                 axios.put('/api/drugs/update-order', {
                         orders: order
                     })
+                    //Si todo sale bien, actualizamos y rerenderizamos la tabla
                     .then(response => {
-                        console.log('Orden actualizado con éxito:', response.data);
-
                         // Llamamos a una función para re-renderizar la tabla
                         if (response.data.updatedDrugs) {
                             reRenderTable(response.data.updatedDrugs);
                         }
                     })
+                    //Si ocurre algún error, lo imprimimos en consola.
                     .catch(error => {
                         console.error('Error al actualizar el orden:', error);
                     });
@@ -225,8 +232,11 @@
     <script>
         let CURRENT_DRUG_ID = null; // Variable global para almacenar el ID actual del medicamento a editar
 
+        // función para mostrar la previsualización de la imágen seleccionada en el input
         function previewImage(event) {
             const file = event.target.files[0]; // Obtener el archivo seleccionado
+
+            // Obtener los elementos del modal
             const previewContainer = document.getElementById('imagePreviewContainer');
             const previewImage = document.getElementById('imagePreview');
 
@@ -247,6 +257,7 @@
             });
         }
 
+        // Función abrir el modal de editar medicamento
         function openEditModal(id) {
             CURRENT_DRUG_ID = id; // Establece el ID del medicamento que estás editando
 
@@ -279,6 +290,7 @@
         }
 
 
+        // Función para actualizar un medicamento
         function updateDrug(event, id) {
             // Crea un objeto con los datos del formulario
             const data = {
@@ -298,6 +310,7 @@
 
             // Realiza la solicitud PUT con los datos
             axios.put(`/api/drugs/update/${id}`, data)
+                //Si todo sale bien, muestra una alerta de éxito
                 .then(response => {
                     if (response.status === 200) {
                         reRenderDrugs(); // Actualiza la tabla
@@ -309,6 +322,7 @@
                         showAlert('El medicamento se ha actualizado exitosamente.', 'alert-success');
                     }
                 })
+                //Si sucede algún error, muestra una alerta de error y lo maneja
                 .catch(error => {
                     handleValidationErrors(error);
                 });
@@ -317,26 +331,34 @@
 
 
 
+        // Función para crear un medicamento
         function createDrug(event) {
 
+            // Crea un objeto con los datos del formulario
             const formData = new FormData();
             formData.append('name', document.getElementById('drug-name').value);
             formData.append('price', document.getElementById('drug-price').value);
             formData.append('quantity', document.getElementById('drug-quantity').value);
             formData.append('description', document.getElementById('drug-description').value);
 
+            // Opcional: Si hay una imagen, maneja este campo de manera distinta
             const imageInput = document.getElementById('image');
             if (imageInput.files[0]) {
                 formData.append('img', imageInput.files[0]); // Adjuntar la imagen
             }
 
+            // obtiene el modal para la creación del medicamento
             const modal = document.getElementById("my_modal_3");
 
+            // hace la petición al backend y manda los datos
             axios.post('/api/drugs/store', formData)
+                // Si todo sale bien, muestra una alerta de éxito
                 .then(response => {
                     if (response.status === 201) {
                         reRenderDrugs(); // Actualiza la tabla
-                        clearErrors();
+                        clearErrors(); // limpia los errores
+
+                        // Cierra el modal de creación del medicamento
                         const modal = document.getElementById("my_modal_3");
                         modal.close();
 
@@ -344,12 +366,14 @@
                         showAlert('El medicamento se ha creado exitosamente.', 'alert-success');
                     }
                 })
+                // si sucede algún error, lo maneja
                 .catch(error => {
                     handleValidationErrors(error);
                 });
 
         }
 
+        // Función para mostrar alertas en pantalla
         function deleteDrug(id) {
             axios.delete(`/api/drugs/destroy/${id}`)
                 .then(response => {
@@ -368,6 +392,7 @@
         }
 
 
+        // función para actualizar los datos de la tabla este es para los orders
         function reRenderTable(updatedDrugs) {
             const tableBody = document.getElementById('simpleList');
             tableBody.innerHTML = ''; // Limpiar el contenido actual
@@ -377,10 +402,12 @@
             });
         }
 
+        // Función para actualizar la lista de medicamentos
         function reRenderDrugs() {
             const tableBody = document.getElementById('simpleList');
             tableBody.innerHTML = ''; // Limpiar el contenido actual
 
+            // Realiza la solicitud GET para obtener los medicamentos
             axios.get('/api/drugs/')
                 .then(response => {
                     const drugs = response.data;
@@ -394,6 +421,7 @@
         }
 
 
+        // Crea una plantilla para cada fila de la tabla
         function createRowTemplate(drug) {
             return `
         <tr class="bg-white hover:bg-gray-50" data-id="${drug.id}">
@@ -414,7 +442,7 @@
                     <a href="/drug/show/${drug.id}" class="px-5 font-medium text-green-600 hover:underline">Ver</a>
                 </div>
                 <div>
-                    <button onclick="openEditModal(${drug.id})" class="px-5 font-medium text-blue-600 hover:underline">
+                    <button onclick="openEditModal(${drug.id})" class="px-5 font-medium text-blue-600 hover:underline cursor-pointer">
                         Editar
                     </button>
                 </div>
@@ -425,6 +453,7 @@
     `;
         }
 
+        // Crea una alerta
         function showAlert(message, alertType) {
             const alertsDiv = document.getElementById('alerts');
 
@@ -453,6 +482,7 @@
             }, 3000); // Mostrar la alerta por 3 segundos
         }
 
+        // maneja los errores de los formularios.
         function handleValidationErrors(error) {
     if (error.response && error.response.status === 422) {
         // Limpia errores previos
@@ -479,6 +509,7 @@
     </script>
 
     <script>
+        // posiciona la escritura en el input cuando se presiona ctrl + k
         document.addEventListener('keydown', function(event) {
             if (event.ctrlKey && event.key === 'k') {
                 event.preventDefault(); // Previene la acción por defecto de Ctrl + K
@@ -486,6 +517,7 @@
             }
         });
 
+        // Evento para buscar medicamentos en la tabla
         document.getElementById('search').addEventListener('input', function(event) {
             const searchValue = event.target.value;
 
