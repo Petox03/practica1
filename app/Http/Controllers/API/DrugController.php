@@ -103,7 +103,7 @@ class DrugController extends Controller
             'img.required' => 'La imagen es obligatoria.',
             'img.image' => 'El archivo debe ser una imagen.',
             'img.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, o gif.',
-            'imf.max' => 'La imagen no debe exceder los 2 MB.',
+            'img.max' => 'La imagen no debe exceder los 2 MB.',
         ]);
 
         // Encuentra el valor más alto en la columna "order"
@@ -146,16 +146,11 @@ class DrugController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
-            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'name.required' => 'El nombre del medicamento es obligatorio.',
             'description.required' => 'La descripción del medicamento es obligatoria.',
             'price.required' => 'El precio del medicamento es obligatorio.',
             'quantity.required' => 'La cantidad por paquete es obligatoria.',
-            'img.required' => 'La imagen es obligatoria.',
-            'img.image' => 'El archivo debe ser una imagen.',
-            'img.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, o gif.',
-            'imf.max' => 'La imagen no debe exceder los 2 MB.',
         ]);
 
         // Procesa el resto como antes
