@@ -157,13 +157,17 @@ class DrugController extends Controller
         $drug = Drug::findOrFail($id);
 
         if ($request->hasFile('img')) {
+
             if ($drug->img && Storage::exists($drug->img)) {
                 Storage::delete($drug->img);
             }
+
             $validatedData['img'] = $request->file('img')->store('drugs', 'public');
         }
 
         $drug->update($validatedData);
+
+
 
         return response()->json([
             'message' => 'El medicamento se ha actualizado exitosamente.',
@@ -221,6 +225,8 @@ class DrugController extends Controller
 
         // Elimina el registro si existe
         $drug->delete();
+
+        Storage::disk('public')->delete($drug->img);
 
         // Retorna una respuesta de éxito
         return response()->json([

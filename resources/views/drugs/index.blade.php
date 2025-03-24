@@ -80,117 +80,22 @@
         <div class="divider"></div>
     </div>
 
-    <dialog id="my_modal_3" class="modal">
-        <div class="modal-box w-2/4 max-w-5xl">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            <h3 class="text-lg font-bold">Añadir medicamento</h3>
+    <x-drug-modal-component modalId="my_modal_3" modalTitle="Añadir medicamento" nameId="drug-name" priceId="drug-price"
+        quantityId="drug-quantity" descriptionId="drug-description" previewContainerId="imagePreviewContainer"
+        previewImageId="imagePreview" fileInputId="image" fileInputRequired="true"
+        actionFunction="createDrug(event, 'imagePreview')" actionButtonText="Crear" />
 
-            <div class="grid grid-cols-3 gap-4">
-                <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Nombre del medicamento</legend>
-                    <input type="text" class="input" placeholder="Nombre" id="drug-name"/>
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Precio</legend>
-                    <input type="text" class="input" placeholder="1,000" id="drug-price"/>
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Cantidad por paquete</legend>
-                    <input type="text" class="input" placeholder="0" id="drug-quantity"/>
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset col-span-3">
-                    <legend class="fieldset-legend">Descripción</legend>
-                    <textarea class="textarea h-24 w-full" placeholder="..." id="drug-description"></textarea>
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset col-span-3">
-                    <!-- Contenedor de la vista previa -->
-                    <div id="imagePreviewContainer" class="mt-5 hidden">
-                        <p class="text-gray-600">Previsualización:</p>
-                        <img id="imagePreview" src="" alt="Previsualización de la imagen"
-                            class="max-w-xs rounded-lg">
-                    </div>
-                    <legend class="fieldset-legend">Imágen</legend>
-                    <input type="file" name="image" id="image"
-                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                        onchange="previewImage(event)" required />
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-
-            </div>
-
-            <div class="modal-action">
-                <form method="dialog">
-                    <button class="text-white btn btn-error">Cerrar</button>
-                </form>
-                <button class="text-white btn btn-success" onclick="createDrug()">Crear</button>
-            </div>
-
-        </div>
-    </dialog>
-
-    <dialog id="edit_modal" class="modal">
-        <div class="modal-box w-2/4 max-w-5xl">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            <h3 class="text-lg font-bold">Editar medicamento</h3>
-
-            <div class="grid grid-cols-3 gap-4">
-                <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Nombre del medicamento</legend>
-                    <input type="text" class="input" placeholder="Nombre" id="edit-drug-name" />
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Precio</legend>
-                    <input type="text" class="input" placeholder="1,000" id="edit-drug-price" />
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Cantidad por paquete</legend>
-                    <input type="text" class="input" placeholder="0" id="edit-drug-quantity" />
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset col-span-3">
-                    <legend class="fieldset-legend">Descripción</legend>
-                    <textarea class="textarea h-24 w-full" placeholder="..." id="edit-drug-description"></textarea>
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-                <fieldset class="fieldset col-span-3">
-                    <!-- Contenedor de la vista previa -->
-                    <div id="edit-imagePreviewContainer" class="mt-5 hidden">
-                        <p class="text-gray-600">Previsualización:</p>
-                        <img id="edit-imagePreview" src="" alt="Previsualización de la imagen"
-                            class="max-w-xs rounded-lg">
-                    </div>
-                    <legend class="fieldset-legend">Imágen</legend>
-                    <input type="file" name="image" id="edit-image"
-                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                        onchange="previewImage(event)" />
-                    <span class="error-message text-red-500 text-sm"></span>
-                </fieldset>
-            </div>
-
-            <div class="modal-action">
-                <form method="dialog">
-                    <button class="text-white btn btn-error">Cerrar</button>
-                </form>
-                <button class="text-white btn btn-success"
-                    onclick="updateDrug(event, CURRENT_DRUG_ID)">Actualizar</button>
-            </div>
-        </div>
-    </dialog>
+    <x-drug-modal-component modalId="edit_modal" modalTitle="Editar medicamento" nameId="edit-drug-name"
+        nameValue="{{ $drug->name ?? '' }}" priceId="edit-drug-price" priceValue="{{ $drug->price ?? '' }}"
+        quantityId="edit-drug-quantity" quantityValue="{{ $drug->quantity ?? '' }}" descriptionId="edit-drug-description"
+        descriptionValue="{{ $drug->description ?? '' }}" previewContainerId="edit-imagePreviewContainer"
+        previewImageId="edit-imagePreview" imageSrc="{{ asset('storage/' . $drug->img) ?? '' }}"
+        imageHidden="{{ empty($drug->img) }}" fileInputId="edit-image" actionFunction="updateDrug(event, CURRENT_DRUG_ID)"
+        actionButtonText="Actualizar" />
 
 @endsection
 
 @push('js')
-
     {{-- Script para sortable js --}}
     <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
     <script>
@@ -233,12 +138,12 @@
         let CURRENT_DRUG_ID = null; // Variable global para almacenar el ID actual del medicamento a editar
 
         // función para mostrar la previsualización de la imágen seleccionada en el input
-        function previewImage(event) {
+        function previewImage(event, preview) {
             const file = event.target.files[0]; // Obtener el archivo seleccionado
 
             // Obtener los elementos del modal
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            const previewImage = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById(`${preview}Container`);
+            const previewImage = document.getElementById(preview);
 
             if (file) {
                 const objectUrl = URL.createObjectURL(file); // Generar una URL temporal
@@ -305,7 +210,7 @@
             if (imageInput.files[0]) {
                 alert(
                     "El manejo de archivos con JSON no es compatible de forma directa; es mejor usar FormData en este caso."
-                    );
+                );
             }
 
             // Realiza la solicitud PUT con los datos
@@ -390,7 +295,6 @@
                     handleValidationErrors(error);
                 });
         }
-
 
         // función para actualizar los datos de la tabla este es para los orders
         function reRenderTable(updatedDrugs) {
@@ -484,28 +388,27 @@
 
         // maneja los errores de los formularios.
         function handleValidationErrors(error) {
-    if (error.response && error.response.status === 422) {
-        // Limpia errores previos
-        clearErrors();
+            if (error.response && error.response.status === 422) {
+                // Limpia errores previos
+                clearErrors();
 
-        const errors = error.response.data.errors;
+                const errors = error.response.data.errors;
 
-        // Muestra los errores específicos debajo de los inputs correspondientes
-        for (const field in errors) {
-            if (errors.hasOwnProperty(field)) {
-                const input = document.getElementById(`drug-${field}`) || document.getElementById('image');
-                const errorSpan = input ? input.nextElementSibling : null;
+                // Muestra los errores específicos debajo de los inputs correspondientes
+                for (const field in errors) {
+                    if (errors.hasOwnProperty(field)) {
+                        const input = document.getElementById(`drug-${field}`) || document.getElementById('image');
+                        const errorSpan = input ? input.nextElementSibling : null;
 
-                if (errorSpan) {
-                    errorSpan.textContent = errors[field].join(', '); // Muestra todos los errores del campo
+                        if (errorSpan) {
+                            errorSpan.textContent = errors[field].join(', '); // Muestra todos los errores del campo
+                        }
+                    }
                 }
+            } else {
+                console.error('Error inesperado:', error);
             }
         }
-    } else {
-        console.error('Error inesperado:', error);
-    }
-}
-
     </script>
 
     <script>
