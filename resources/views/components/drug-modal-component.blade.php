@@ -13,12 +13,12 @@
             </fieldset>
             <fieldset class="fieldset">
                 <legend class="fieldset-legend">Precio</legend>
-                <input type="text" class="input" placeholder="1,000" id="{{ $priceId }}" value="{{ $priceValue ?? '' }}" />
+                <input type="number" class="input" placeholder="1,000" id="{{ $priceId }}" value="{{ $priceValue ?? '' }}" />
                 <span class="error-message text-red-500 text-sm"></span>
             </fieldset>
             <fieldset class="fieldset">
                 <legend class="fieldset-legend">Cantidad por paquete</legend>
-                <input type="text" class="input" placeholder="0" id="{{ $quantityId }}" value="{{ $quantityValue ?? '' }}" />
+                <input type="number" class="input" placeholder="0" id="{{ $quantityId }}" value="{{ $quantityValue ?? '' }}" />
                 <span class="error-message text-red-500 text-sm"></span>
             </fieldset>
             <fieldset class="fieldset col-span-3">

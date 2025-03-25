@@ -39,7 +39,7 @@
             </thead>
             <tbody id="simpleList">
                 @foreach ($my_drugs as $drug)
-                    <tr class="bg-white hover:bg-gray-50" data-id="{{ $drug->id }}">
+                    <tr class="bg-white hover:bg-gray-50 cursor-pointer" data-id="{{ $drug->id }}">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                             {{ $drug->order == 0 ? $drug->id : $drug->order }}
                         </th>
@@ -97,7 +97,7 @@
 
 @push('js')
     {{-- Script para sortable js --}}
-    <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
         // Se asigna al div con el id simpleList un nuevo elemento sortable
         Sortable.create(document.getElementById('simpleList'), {
@@ -328,7 +328,7 @@
         // Crea una plantilla para cada fila de la tabla
         function createRowTemplate(drug) {
             return `
-        <tr class="bg-white hover:bg-gray-50" data-id="${drug.id}">
+        <tr class="bg-white hover:bg-gray-50 cursor-pointer" data-id="${drug.id}">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                 ${drug.order == 0 ? drug.id : drug.order}
             </th>

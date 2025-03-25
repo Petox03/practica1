@@ -151,6 +151,8 @@ class DrugController extends Controller
             'description.required' => 'La descripción del medicamento es obligatoria.',
             'price.required' => 'El precio del medicamento es obligatorio.',
             'quantity.required' => 'La cantidad por paquete es obligatoria.',
+            'price.numeric' => 'El precio debe ser numérico',
+            'quantity.integer' => 'La cantidad debe ser un número entero',
         ]);
 
         // Procesa el resto como antes
